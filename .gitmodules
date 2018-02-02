@@ -1,0 +1,6 @@
+[submodule "dep/csv-cpp"]
+	path = dep/csv-cpp
+	url = git@bitbucket.org:Rookfighter/csv-cpp.git
+[submodule "dep/eigen"]
+	path = dep/eigen
+	url = https://github.com/eigenteam/eigen-git-mirror.git
