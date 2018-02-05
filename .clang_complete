@@ -1,2 +1,3 @@
 -Isrc
--Idep/csv-cpp
+-Idep/csv-cpp/src
+-Idep/eigen
