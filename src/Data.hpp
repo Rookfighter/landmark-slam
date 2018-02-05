@@ -26,7 +26,12 @@ namespace slam
     // 2D position (x, y)
     typedef Eigen::Vector2d Position;
 
-    void loadSensorData(const std::string &filename, std::vector<Odometry> &odom, std::vector<Observation> observ);
+    typedef struct {
+        Odometry odom;
+        std::vector<Observation> observ;
+    } Data;
+
+    void loadSensorData(const std::string &filename, std::vector<Data> &data);
     void loadWorld(const std::string &filename, std::vector<Position> &landmarks);
 
 }

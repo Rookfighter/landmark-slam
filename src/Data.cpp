@@ -12,14 +12,13 @@
 
 namespace slam
 {
-    void loadSensorData(const std::string &filename, std::vector<Odometry> &odom, std::vector<Observation> observ)
+    void loadSensorData(const std::string &filename, std::vector<Data> &data)
     {
         csv::CsvFile csvf;
         csvf.setSep(' ');
         csvf.load(filename);
 
-        size_t odomCount = 0;
-        size_t observCount = 0;
+        size_t dataCount = 0;
 
         // first loop to check validity of file and count odoms and
         // measurements
@@ -37,7 +36,7 @@ namespace slam
                     throw std::logic_error(ss.str());
                 }
                 // increment odometry count
-                ++odomCount;
+                ++dataCount;
             }
             else if(row[0].asString() == "SENSOR")
             {
@@ -48,7 +47,6 @@ namespace slam
                     ss << "l" << i << ": invalid column count for SENSOR " << row.size();
                     throw std::logic_error(ss.str());
                 }
-                ++observCount;
             }
             else
             {
@@ -59,26 +57,26 @@ namespace slam
         }
 
         // initialize odom and measurements vectors
-        odom.clear();
-        observ.clear();
-        odom.reserve(odomCount);
-        observ.reserve(observCount);
+        data.clear();
+        data.reserve(dataCount);
 
         for(csv::CsvRow &row : csvf)
         {
             if(row[0].asString() == "ODOMETRY")
             {
-                Odometry u(row[1].asDouble(),
-                           row[2].asDouble(),
-                           row[3].asDouble());
-                odom.push_back(u);
+                Odometry u (row[1].asDouble(),
+                            row[2].asDouble(),
+                            row[3].asDouble());
+                Data d {u, {}};
+                data.push_back(d);
             }
             else
             {
                 Observation z {{row[2].asDouble(),
                                row[3].asDouble()},
                                row[1].asUInt()};
-                observ.push_back(z);
+
+                data.back().observ.push_back(z);
             }
         }
     }

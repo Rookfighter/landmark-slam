@@ -15,13 +15,12 @@ using namespace slam;
 
 int main()
 {
+    std::vector<Data> data;
     std::vector<Position> landmarks;
-    std::vector<Observation> observ;
-    std::vector<Odometry> odom;
 
     try
     {
-        loadSensorData(DATA_FILE, odom, observ);
+        loadSensorData(DATA_FILE, data);
         loadWorld(WORLD_FILE, landmarks);
     }
     catch (std::exception &e)
