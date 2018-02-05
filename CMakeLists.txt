@@ -18,6 +18,7 @@ include_directories(
 set(SRC
     "src/Data.cpp"
     "src/Math.cpp"
+    "src/Models.cpp"
 )
 
 add_library(${LIB_NAME} ${SRC})
