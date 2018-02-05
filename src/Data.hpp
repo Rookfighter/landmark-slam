@@ -14,8 +14,10 @@ namespace slam
 {
     // 2D pose (x, y, theta)
     typedef Eigen::Vector3d Pose;
+    typedef Eigen::Matrix3d PoseCov;
     // range bearing measurement (r, theta, c)
     typedef Eigen::Vector2d Measurement;
+    typedef Eigen::Matrix2d SensorNoise;
     // observation with measurement and data assoc
     typedef struct {
         Measurement m;
@@ -23,6 +25,7 @@ namespace slam
     } Observation;
     // odometry (r1, t, r2)
     typedef Eigen::Vector3d Odometry;
+    typedef Eigen::Matrix3d OdomNoise;
     // 2D position (x, y)
     typedef Eigen::Vector2d Position;
 
