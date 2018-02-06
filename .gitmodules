@@ -7,3 +7,6 @@
 [submodule "dep/spdlog"]
 	path = dep/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "dep/matplotlib-cpp"]
+	path = dep/matplotlib-cpp
+	url = https://github.com/lava/matplotlib-cpp.git
