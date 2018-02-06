@@ -33,6 +33,17 @@ namespace slam
     };
 
     SensorModel calcSensorModel(const Pose &pose, const Position &landmark);
+
+    struct InvSensorModel
+    {
+        typedef Position Value;
+        typedef Eigen::Matrix<double, 2, 5> Jacobian;
+
+        Value val;
+        Jacobian jac;
+    };
+
+    InvSensorModel calcInvSensorModel(const Pose &pose, const Measurement &measurement);
 }
 
 #endif

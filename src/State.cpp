@@ -9,6 +9,12 @@
 
 namespace slam
 {
+    State::State(const size_t dim)
+    : dim(dim), mean(StateMean::Zero(dim)), cov(StateCov::Zero(dim, dim)), seen(dim, false)
+    {
+
+    }
+
     StatePose State::getPose() const
     {
         StatePose result;
@@ -37,7 +43,7 @@ namespace slam
 
     StateLandmark State::getLandmark(const size_t c) const
     {
-        assert((3 + 2*c) + 1 < mean.rows());
+        assert((3 + 2*c) + 1 < static_cast<size_t>(mean.rows()));
 
         StateLandmark result;
         size_t idx = 3 + c*2;
@@ -55,7 +61,7 @@ namespace slam
 
     void State::setLandmark(const StateLandmark &lm)
     {
-        assert((3 + 2*lm.c) + 1 < mean.rows());
+        assert((3 + 2*lm.c) + 1 < static_cast<size_t>(mean.rows()));
 
         size_t idx = 3 + 2*lm.c;
 

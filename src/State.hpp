@@ -31,8 +31,12 @@ namespace slam
     class State
     {
     public:
+        size_t dim;
         StateMean mean;
         StateCov cov;
+        std::vector<bool> seen;
+
+        State(const size_t dim);
 
         StatePose getPose() const;
         void setPose(const StatePose &p);

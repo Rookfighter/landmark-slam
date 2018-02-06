@@ -73,8 +73,8 @@ namespace slam
             else
             {
                 Observation z {{row[2].asDouble(),
-                               row[3].asDouble()},
-                               row[1].asUInt()};
+                                row[3].asDouble()},
+                                row[1].asUInt() - 1};
 
                 data.back().observ.push_back(z);
             }

@@ -48,7 +48,25 @@ namespace slam
 
         // calc jacobian of sensor model
         result.jac << -qSqrt * dx, -qSqrt * dy,  0,  qSqrt * dx, qSqrt * dy,
-                dy,         -dx,         -q, -dy,         dx;
+                       dy,         -dx,         -q, -dy,         dx;
+
+        result.jac /= q;
+
+        return result;
+    }
+
+    InvSensorModel calcInvSensorModel(const Pose &pose, const Measurement &measurement)
+    {
+        InvSensorModel result;
+
+        double dx = measurement(0) * std::cos(pose(2) + measurement(1));
+        double dy = measurement(0) * std::sin(pose(2) + measurement(1));
+
+        result.val <<
+            pose(0) + dx,
+            pose(1) + dy;
+
+        result.jac = InvSensorModel::Jacobian::Zero();
 
         return result;
     }
