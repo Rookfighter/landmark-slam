@@ -43,14 +43,14 @@ namespace slam
 
         // calc expected measurement
         result.val << qSqrt,
-                      std::atan2(dy, dx) - pose(3);
+                      std::atan2(dy, dx) - pose(2);
         result.val(1) = normalizeAngle(result.val(1));
 
         // calc jacobian of sensor model
         result.jac << -qSqrt * dx, -qSqrt * dy,  0,  qSqrt * dx, qSqrt * dy,
                        dy,         -dx,         -q, -dy,         dx;
 
-        result.jac /= q;
+        result.jac = result.jac * (1/q);
 
         return result;
     }

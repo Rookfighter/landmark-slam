@@ -1,3 +1,4 @@
 -Isrc
 -Idep/csv-cpp/src
 -Idep/eigen
+-Idep/spdlog/include

@@ -6,9 +6,11 @@
  */
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include "Models.hpp"
 #include "State.hpp"
 #include "Math.hpp"
+#include "Log.hpp"
 
 using namespace slam;
 
@@ -43,7 +45,7 @@ static void correctionStep(State &state, const std::vector<Observation> &observ,
     {
         const Observation& obs = observ[i];
         size_t c = obs.c;
-        size_t idx = 3+ 2*c;
+        size_t idx = 3 + 2*c;
 
         StateLandmark lm = state.getLandmark(c);
         StatePose spose = state.getPose();
@@ -80,7 +82,7 @@ static void correctionStep(State &state, const std::vector<Observation> &observ,
 
     Eigen::MatrixXd jacsT = jacs.transpose();
     Eigen::MatrixXd cov12 = state.cov * jacsT;
-    Eigen::MatrixXd kalTmp = (jacs * state.cov * jacsT + noise);
+    Eigen::MatrixXd kalTmp = jacs * cov12 + noise;
     Eigen::MatrixXd kalGain = cov12 * kalTmp.inverse();
 
     state.mean = state.mean + kalGain * zdiffs;
@@ -94,10 +96,11 @@ static int loadScenario(std::vector<Data> &data,
     {
         loadData(DATA_FILE, data);
         loadWorld(WORLD_FILE, landmarks);
+        logger()->info("Loaded scenario {} data elements, {} landmarks.", data.size(), landmarks.size());
     }
     catch (std::exception &e)
     {
-        std::cerr << "Failed to load data: " << e.what() << std::endl;
+        logger()->error("Failed to load scenario: {}", e.what());
         return 1;
     }
 
@@ -125,9 +128,12 @@ static void tryEKF(const std::vector<Data> &data,
 
     for(size_t i = 0; i < data.size(); ++i)
     {
+        logger()->info("iteration {}", i);
+
         const Data &dat = data[i];
 
         // process prediction step of EKF
+        logger()->info("  prediction step");
         predictionStep(state, dat.odom, odomNoise);
 
         size_t obsCount = dat.observ.size();
@@ -135,7 +141,8 @@ static void tryEKF(const std::vector<Data> &data,
         if(obsCount > 0)
         {
             // create noise matrix for measurements
-            Eigen::MatrixXd noise = sNoise * Eigen::MatrixXd::Identity(obsCount, obsCount);
+            logger()->info("  correction step");
+            Eigen::MatrixXd noise = sNoise * Eigen::MatrixXd::Identity(obsCount*2, obsCount*2);
             // process correction step of EKF
             correctionStep(state, dat.observ, noise);
         }
@@ -151,7 +158,7 @@ static int runEKF(const std::vector<Data> &data,
     }
     catch(std::exception &e)
     {
-        std::cerr << "Failed to run EKF: " << e.what() << std::endl;
+        logger()->error("Failed to run EKF: {}", e.what());
         return 1;
     }
 
