@@ -12,7 +12,7 @@
 
 namespace slam
 {
-    void loadSensorData(const std::string &filename, std::vector<Data> &data)
+    void loadData(const std::string &filename, std::vector<Data> &data)
     {
         csv::CsvFile csvf;
         csvf.setSep(' ');
