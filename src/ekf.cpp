@@ -57,29 +57,30 @@ static void correctionStep(State &state, const std::vector<Observation> &observ,
         {
             InvSensorModel invSM = calcInvSensorModel(spose.pose, obs.m);
             lm.pos = invSM.val;
+            state.setLandmark(lm);
             state.seen[c] = true;
         }
 
         // calculate sensor model
         SensorModel sensorModel = calcSensorModel(spose.pose, lm.pos);
 
-        // transform jacobian into correct dimension
+        // calculate diff of measurements
+        Measurement zdiffi = obs.m - sensorModel.val;
+        zdiffi(1) = normalizeAngle(zdiffi(1));
+
         for(size_t j = 0; j < 2; ++j)
         {
             size_t k = i*2+j;
+
+            zdiffs(k) = zdiffi(j);
+
+            // transform jacobian into correct dimension
             jacs(k,0)     = sensorModel.jac(j,0);
             jacs(k,1)     = sensorModel.jac(j,1);
             jacs(k,2)     = sensorModel.jac(j,2);
             jacs(k,idx)   = sensorModel.jac(j,3);
             jacs(k,idx+1) = sensorModel.jac(j,4);
         }
-
-        // calculate diff of measurements
-        Measurement zdiffi = obs.m - sensorModel.val;
-        zdiffi(1) = normalizeAngle(zdiffi(1));
-
-        zdiffs(i*2)   = zdiffi(0);
-        zdiffs(i*2+1) = zdiffi(1);
     }
 
     Eigen::MatrixXd jacsT = jacs.transpose();
@@ -162,7 +163,7 @@ static int runEKF(const std::vector<Data> &data,
         std::vector<State> records;
         tryEKF(data, landmarks, records);
         logger().info("Plotting ...");
-        plotRecords(records, landmarks, PLOT_PREFIX);
+        plotRecords(records, data, landmarks, PLOT_PREFIX);
     }
     catch(std::exception &e)
     {

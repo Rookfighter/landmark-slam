@@ -2,6 +2,7 @@
 #include "Plot.hpp"
 #include "Math.hpp"
 #include "Log.hpp"
+#include "Models.hpp"
 #include <sstream>
 #include <iomanip>
 #include <matplotlibcpp.h>
@@ -10,8 +11,9 @@ namespace plt = matplotlibcpp;
 
 namespace slam
 {
-    static void plotPose(const Pose &pose)
+    static void plotPoseEstimate(const State &state)
     {
+        Pose pose = state.getPose().pose;
         double radius = 0.3;
         size_t corners = 16;
         double step = 2 * pi() / corners;
@@ -36,7 +38,42 @@ namespace slam
         plt::plot({sx, tx}, {sy, ty}, "r-");
     }
 
-    void plotState(const State& state, const std::vector<Position> &landmarks, const std::string &filename)
+    void plotLandmarkEstimates(const State &state)
+    {
+        size_t n = (state.dim - 3) / 2;
+        std::vector<double> x(n);
+        std::vector<double> y(n);
+
+        for(size_t i = 0; i < n; ++i)
+        {
+            StateLandmark lm = state.getLandmark(i);
+            x[i] = lm.pos(0);
+            y[i] = lm.pos(1);
+        }
+
+        plt::plot(x, y, "gx");
+    }
+
+    void plotMeasurements(const State& state, const Data &data)
+    {
+        if(data.observ.empty())
+            return;
+
+        Pose pose = state.getPose().pose;
+
+        for(size_t i = 0; i < data.observ.size(); ++i)
+        {
+            const Measurement &m = data.observ[i].m;
+            InvSensorModel sm = calcInvSensorModel(pose, m);
+
+            plt::plot({pose(0), sm.val(0)}, {pose(1), sm.val(1)}, "m-");
+        }
+    }
+
+    void plotState(const State& state,
+        const Data &data,
+        const std::vector<Position> &landmarks,
+        const std::string &filename)
     {
         plt::clf();
 
@@ -53,18 +90,23 @@ namespace slam
         }
 
         plt::plot(lmsX, lmsY, "b*");
-        plotPose(state.getPose().pose);
+        plotPoseEstimate(state);
+        plotLandmarkEstimates(state);
+        plotMeasurements(state, data);
 
         plt::save(filename);
     }
 
-    void plotRecords(const std::vector<State>& records, const std::vector<Position> &landmarks, const std::string &prefix)
+    void plotRecords(const std::vector<State>& records,
+        const std::vector<Data> &data,
+        const std::vector<Position> &landmarks,
+        const std::string &prefix)
     {
         for(size_t i = 0; i < records.size(); ++i)
         {
             std::stringstream ss;
             ss << prefix << std::setfill('0') << std::setw(3) << i+1 << ".png";
-            plotState(records[i], landmarks, ss.str());
+            plotState(records[i], data[i], landmarks, ss.str());
         }
     }
 }

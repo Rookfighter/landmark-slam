@@ -26,9 +26,9 @@ namespace slam
         result.val(2) = normalizeAngle(result.val(2));
 
         // calc jacobian of motion model
-        result.jac << 0, 0, -dy,
-               0, 0,  dx,
-               0, 0,  0;
+        result.jac << 1, 0, -dy,
+                      0, 1,  dx,
+                      0, 0,  1;
 
         return result;
     }
@@ -38,7 +38,7 @@ namespace slam
         SensorModel result;
         double dx    = landmark(0) - pose(0);
         double dy    = landmark(1) - pose(1);
-        double q     = dx*dx + dy *dy;
+        double q     = dx * dx + dy * dy;
         double qSqrt = std::sqrt(q);
 
         // calc expected measurement

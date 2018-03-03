@@ -12,8 +12,14 @@
 
 namespace slam
 {
-    void plotState(const State& state, const std::vector<Position> &landmarks, const std::string &filename);
-    void plotRecords(const std::vector<State>& records, const std::vector<Position> &landmarks, const std::string &prefix);
+    void plotState(const State& state,
+        const Data &data,
+        const std::vector<Position> &landmarks,
+        const std::string &filename);
+    void plotRecords(const std::vector<State>& records,
+        const std::vector<Data> &data,
+        const std::vector<Position> &landmarks,
+        const std::string &prefix);
 }
 
 #endif
