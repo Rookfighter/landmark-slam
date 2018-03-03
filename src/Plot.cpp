@@ -14,16 +14,18 @@ namespace slam
     {
         double radius = 0.3;
         size_t corners = 16;
-        double step = (pi() / corners);
+        double step = 2 * pi() / corners;
 
-        std::vector<double> x(corners);
-        std::vector<double> y(corners);
+        std::vector<double> x(corners + 1);
+        std::vector<double> y(corners + 1);
 
         for(size_t i = 0; i < corners; ++i)
         {
                 x[i] = pose(0) + radius * cos(i * step);
                 y[i] = pose(1) + radius * sin(i * step);
         }
+        x[corners] = x[0];
+        y[corners] = y[0];
 
         double sx = pose(0);
         double sy = pose(1);
