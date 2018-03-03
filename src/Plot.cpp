@@ -36,7 +36,10 @@ namespace slam
 
     void plotState(const State& state, const std::vector<Position> &landmarks, const std::string &filename)
     {
-        plt::figure();
+        plt::clf();
+
+        plt::xlim(-2, 12);
+        plt::ylim(-2, 12);
 
         std::vector<double> lmsX(landmarks.size());
         std::vector<double> lmsY(landmarks.size());
@@ -47,9 +50,7 @@ namespace slam
             lmsY[i] = landmarks[i](1);
         }
 
-        logger().info("plot lms");
         plt::plot(lmsX, lmsY, "b*");
-        logger().info("plot pose");
         plotPose(state.getPose().pose);
 
         plt::save(filename);

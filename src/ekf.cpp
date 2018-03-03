@@ -17,6 +17,7 @@ using namespace slam;
 
 #define DATA_FILE "../data/sensor_data.dat"
 #define WORLD_FILE "../data/world.dat"
+#define PLOT_PREFIX "../plot/ekf_"
 #define INF 1000
 
 static void predictionStep(State &state, const Odometry &odom, const OdomNoise &noise)
@@ -160,7 +161,8 @@ static int runEKF(const std::vector<Data> &data,
     {
         std::vector<State> records;
         tryEKF(data, landmarks, records);
-        plotRecords(records, landmarks, "../plot/ekf_");
+        logger().info("Plotting ...");
+        plotRecords(records, landmarks, PLOT_PREFIX);
     }
     catch(std::exception &e)
     {
