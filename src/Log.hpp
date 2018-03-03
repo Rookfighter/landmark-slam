@@ -12,7 +12,7 @@
 
 namespace slam
 {
-    std::shared_ptr<spdlog::logger> logger();
+    spdlog::logger &logger();
 }
 
 #endif

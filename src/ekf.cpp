@@ -11,6 +11,7 @@
 #include "State.hpp"
 #include "Math.hpp"
 #include "Log.hpp"
+#include "Plot.hpp"
 
 using namespace slam;
 
@@ -96,11 +97,11 @@ static int loadScenario(std::vector<Data> &data,
     {
         loadData(DATA_FILE, data);
         loadWorld(WORLD_FILE, landmarks);
-        logger()->info("Loaded scenario {} data elements, {} landmarks.", data.size(), landmarks.size());
+        logger().info("Loaded scenario {} data elements, {} landmarks.", data.size(), landmarks.size());
     }
     catch (std::exception &e)
     {
-        logger()->error("Failed to load scenario: {}", e.what());
+        logger().error("Failed to load scenario: {}", e.what());
         return 1;
     }
 
@@ -108,8 +109,9 @@ static int loadScenario(std::vector<Data> &data,
 }
 
 static void tryEKF(const std::vector<Data> &data,
-    const std::vector<Position> &landmarks)
+    const std::vector<Position> &landmarks, std::vector<State> &records)
 {
+    records.clear();
     // define noise of odometry
     double motionNoise = 0.1;
     OdomNoise odomNoise;
@@ -128,12 +130,12 @@ static void tryEKF(const std::vector<Data> &data,
 
     for(size_t i = 0; i < data.size(); ++i)
     {
-        logger()->info("iteration {}", i);
+        logger().info("iteration {}", i);
 
         const Data &dat = data[i];
 
         // process prediction step of EKF
-        logger()->info("  prediction step");
+        logger().info("  prediction step");
         predictionStep(state, dat.odom, odomNoise);
 
         size_t obsCount = dat.observ.size();
@@ -141,11 +143,13 @@ static void tryEKF(const std::vector<Data> &data,
         if(obsCount > 0)
         {
             // create noise matrix for measurements
-            logger()->info("  correction step");
+            logger().info("  correction step");
             Eigen::MatrixXd noise = sNoise * Eigen::MatrixXd::Identity(obsCount*2, obsCount*2);
             // process correction step of EKF
             correctionStep(state, dat.observ, noise);
         }
+
+        records.push_back(state);
     }
 }
 
@@ -154,11 +158,13 @@ static int runEKF(const std::vector<Data> &data,
 {
     try
     {
-        tryEKF(data, landmarks);
+        std::vector<State> records;
+        tryEKF(data, landmarks, records);
+        plotRecords(records, landmarks, "../plot/ekf_");
     }
     catch(std::exception &e)
     {
-        logger()->error("Failed to run EKF: {}", e.what());
+        logger().error("Failed to run EKF: {}", e.what());
         return 1;
     }
 
