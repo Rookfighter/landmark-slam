@@ -55,6 +55,28 @@ namespace slam
         return result;
     }
 
+    SensorModelLm calcSensorModelLm(const Pose &pose, const Position &landmark)
+    {
+        SensorModelLm result;
+        double dx    = landmark(0) - pose(0);
+        double dy    = landmark(1) - pose(1);
+        double q     = dx * dx + dy * dy;
+        double qSqrt = std::sqrt(q);
+
+        // calc expected measurement
+        result.val << qSqrt,
+                      std::atan2(dy, dx) - pose(2);
+        result.val(1) = normalizeAngle(result.val(1));
+
+        // calc jacobian of sensor model
+        result.jac << dx / result.val(0),
+                      dy / result.val(0),
+                      -dy / (result.val(0) * result.val(0)),
+                      dx / (result.val(0) * result.val(0));
+
+        return result;
+    }
+
     InvSensorModel calcInvSensorModel(const Pose &pose, const Measurement &measurement)
     {
         InvSensorModel result;
