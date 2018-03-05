@@ -42,12 +42,13 @@ static int run(const std::vector<Data> &data,
                  0, motionNoise, 0,
                  0, 0, motionNoise/10;
 
-    EKFSlam slamAlgo(odomNoise, sensorNoise);
+    size_t dim = 3 + 2 * landmarks.size();
+    EKFSlam slamAlgo(dim, odomNoise, sensorNoise);
 
     try
     {
         logger().info("Solving SLAM ...");
-        std::vector<State> records = slamAlgo.run(data, landmarks);
+        std::vector<State> records = slamAlgo.run(data);
         logger().info("Plotting ...");
         slamAlgo.plot(records, data, landmarks, "../plot/");
     }

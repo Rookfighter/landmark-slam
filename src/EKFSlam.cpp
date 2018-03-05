@@ -15,9 +15,9 @@
 
 namespace slam
 {
-    EKFSlam::EKFSlam(const Eigen::Matrix3d &odomNoise,
+    EKFSlam::EKFSlam(const size_t dim, const Eigen::Matrix3d &odomNoise,
         const double sensorNoise)
-        : odomNoise_(odomNoise), sensorNoise_(sensorNoise)
+        : dim_(dim), odomNoise_(odomNoise), sensorNoise_(sensorNoise)
     {
 
     }
@@ -37,18 +37,14 @@ namespace slam
         plotStateRecords(records, data, landmarks, ss.str());
     }
 
-    std::vector<State> EKFSlam::run(const std::vector<Data> &data,
-        const std::vector<Position> &landmarks)
+    std::vector<State> EKFSlam::run(const std::vector<Data> &data)
     {
         std::vector<State> records;
         records.reserve(data.size() + 1);
 
-        // calc dimension of problem to solve
-        size_t dim = 3 + landmarks.size() * 2;
-
         // init mean estimate to be all zeros
-        State state(dim);
-        for(size_t i = 3; i < dim; ++i)
+        State state(dim_);
+        for(size_t i = 3; i < dim_; ++i)
             state.cov(i, i) = INF;
 
         records.push_back(state);
