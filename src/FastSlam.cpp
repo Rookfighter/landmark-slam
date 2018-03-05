@@ -43,7 +43,9 @@ namespace slam
             const Data &dat = data[i];
 
             sampleParticles(particles, dat);
+            particles = resample(particles);
 
+            records.push_back(particles);
         }
 
         return records;
@@ -118,5 +120,43 @@ namespace slam
                 }
             }
         }
+    }
+
+    static double sumWeights(const ParticleSet &particles)
+    {
+        double sum = 0;
+        for(const Particle &p: particles)
+            sum += p.weight;
+
+        return sum;
+    }
+
+    ParticleSet FastSlam::resample(const ParticleSet &particles)
+    {
+        ParticleSet result(particles.size());
+
+        double step = sumWeights(particles) / particles.size();
+
+        std::default_random_engine generator;
+        std::uniform_real_distribution<double> distrib(0, step);
+
+        double toHit = distrib(generator);
+        double sum = particles[0].weight;
+        size_t k = 0;
+
+        // do low variance resampling (stochastic universal resampling)
+        for(size_t i = 0; i < particles.size(); ++i)
+        {
+            while(sum < toHit)
+            {
+                k = (k + 1) % particles.size();
+                sum += particles[k].weight;
+            }
+
+            result[i] = particles[k];
+            toHit += step;
+        }
+
+        return result;
     }
 }
