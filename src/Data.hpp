@@ -18,7 +18,6 @@ namespace slam
 
     // range bearing measurement (r, theta, c)
     typedef Eigen::Vector2d Measurement;
-    typedef Eigen::Matrix2d SensorNoise;
 
     // observation with measurement and data assoc
     typedef struct {
@@ -28,7 +27,6 @@ namespace slam
 
     // odometry (r1, t, r2)
     typedef Eigen::Vector3d Odometry;
-    typedef Eigen::Matrix3d OdomNoise;
 
     // 2D position (x, y)
     typedef Eigen::Vector2d Position;

@@ -30,6 +30,7 @@ set(SRC
     "src/Models.cpp"
     "src/State.cpp"
     "src/Plot.cpp"
+    "src/EKFSlam.cpp"
 )
 
 add_library(${LIB_NAME} ${SRC})
