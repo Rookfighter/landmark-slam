@@ -40,5 +40,5 @@ target_link_libraries(${LIB_NAME}
     ${PYTHON_LIBRARY}
 )
 
-add_executable(ekf "src/ekf.cpp")
-target_link_libraries(ekf ${LIB_NAME})
+add_executable(slam "src/main.cpp")
+target_link_libraries(slam ${LIB_NAME})
