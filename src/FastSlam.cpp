@@ -42,8 +42,11 @@ namespace slam
         std::vector<ParticleSet> records;
         records.reserve(data.size() + 1);
 
+        logger().info("init");
         ParticleSet particles(count_);
         initParticles(particles);
+
+        logger().info("done init");
 
         records.push_back(particles);
 
@@ -71,12 +74,15 @@ namespace slam
 
         for(Particle &p :particles)
         {
+            logger().info("Particle");
             p.pose(0) = distribX(generator);
             p.pose(1) = distribY(generator);
             p.pose(2) = 0;
             p.weight = 0;
 
+            logger().info("  map {}", landmarkCount);
             p.map.resize(landmarkCount);
+            p.seen.resize(landmarkCount);
             for(size_t j = 0; j < p.map.size(); ++j)
             {
                 LandmarkEstimate &lm = p.map[j];
@@ -84,9 +90,12 @@ namespace slam
                 lm.pos << 0, 0;
                 lm.cov << 0, 0,
                           0, 0;
+
                 lm.id = j;
                 p.seen[j] = false;
             }
+
+            logger().info("  done");
         }
     }
 

@@ -6,6 +6,7 @@
  */
 
 #include "EKFSlam.hpp"
+#include "FastSlam.hpp"
 #include "Models.hpp"
 #include "Log.hpp"
 
@@ -32,23 +33,50 @@ static int loadScenario(std::vector<Data> &data,
     return 0;
 }
 
+// static int run(const std::vector<Data> &data,
+//     const std::vector<Position> &landmarks)
+// {
+//     double sensorNoise = 0.1;
+//     double motionNoise = 0.1;
+//     Eigen::Matrix3d odomNoise;
+//     odomNoise << motionNoise, 0, 0,
+//                  0, motionNoise, 0,
+//                  0, 0, motionNoise/10;
+//
+//     size_t dim = 3 + 2 * landmarks.size();
+//     EKFSlam slamAlgo(dim, odomNoise, sensorNoise);
+//
+//     try
+//     {
+//         logger().info("Solving SLAM ...");
+//         std::vector<State> records = slamAlgo.run(data);
+//         logger().info("Plotting ...");
+//         slamAlgo.plot(records, data, landmarks, "../plot/");
+//     }
+//     catch(std::exception &e)
+//     {
+//         logger().error("Failed to run EKF: {}", e.what());
+//         return 1;
+//     }
+//
+//     return 0;
+// }
+
 static int run(const std::vector<Data> &data,
     const std::vector<Position> &landmarks)
 {
     double sensorNoise = 0.1;
-    double motionNoise = 0.1;
-    Eigen::Matrix3d odomNoise;
-    odomNoise << motionNoise, 0, 0,
-                 0, motionNoise, 0,
-                 0, 0, motionNoise/10;
+    Eigen::Matrix2d borders;
+    borders << 0, 10,
+               0, 10;
 
     size_t dim = 3 + 2 * landmarks.size();
-    EKFSlam slamAlgo(dim, odomNoise, sensorNoise);
+    FastSlam slamAlgo(dim, 100, borders, sensorNoise);
 
     try
     {
         logger().info("Solving SLAM ...");
-        std::vector<State> records = slamAlgo.run(data);
+        std::vector<ParticleSet> records = slamAlgo.run(data);
         logger().info("Plotting ...");
         slamAlgo.plot(records, data, landmarks, "../plot/");
     }
