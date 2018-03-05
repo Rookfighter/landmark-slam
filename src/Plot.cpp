@@ -11,6 +11,21 @@ namespace plt = matplotlibcpp;
 
 namespace slam
 {
+
+    static void plotLandmarks(const std::vector<Position> &landmarks)
+    {
+        std::vector<double> lmsX(landmarks.size());
+        std::vector<double> lmsY(landmarks.size());
+
+        for(size_t i = 0; i < landmarks.size(); ++i)
+        {
+            lmsX[i] = landmarks[i](0);
+            lmsY[i] = landmarks[i](1);
+        }
+
+        plt::plot(lmsX, lmsY, "b*");
+    }
+
     static void plotPoseEstimate(const State &state)
     {
         Pose pose = state.getPose().pose;
@@ -80,16 +95,7 @@ namespace slam
         plt::xlim(-2, 12);
         plt::ylim(-2, 12);
 
-        std::vector<double> lmsX(landmarks.size());
-        std::vector<double> lmsY(landmarks.size());
-
-        for(size_t i = 0; i < landmarks.size(); ++i)
-        {
-            lmsX[i] = landmarks[i](0);
-            lmsY[i] = landmarks[i](1);
-        }
-
-        plt::plot(lmsX, lmsY, "b*");
+        plotLandmarks(landmarks);
         plotPoseEstimate(state);
         plotLandmarkEstimates(state);
         plotMeasurements(state, data);
@@ -110,6 +116,51 @@ namespace slam
                 plotState(records[i], Data(), landmarks, ss.str());
             else
                 plotState(records[i], data[i-1], landmarks, ss.str());
+        }
+    }
+
+    static void plotParticles(const ParticleSet& particles)
+    {
+        std::vector<double> x(particles.size());
+        std::vector<double> y(particles.size());
+
+        for(size_t i = 0; i < particles.size(); ++i)
+        {
+            x[i] = particles[i].pose(0);
+            y[i] = particles[i].pose(1);
+        }
+
+        plt::plot(x, y, "rs");
+    }
+
+    void plotParticleSet(const ParticleSet& particles,
+        const Data &data,
+        const std::vector<Position> &landmarks,
+        const std::string &filename)
+    {
+        plt::clf();
+
+        plt::xlim(-2, 12);
+        plt::ylim(-2, 12);
+
+        plotLandmarks(landmarks);
+        plotParticles(particles);
+
+        plt::save(filename);
+    }
+    void plotParticleRecords(const std::vector<ParticleSet>& records,
+        const std::vector<Data> &data,
+        const std::vector<Position> &landmarks,
+        const std::string &prefix)
+    {
+        for(size_t i = 0; i < records.size(); ++i)
+        {
+            std::stringstream ss;
+            ss << prefix << std::setfill('0') << std::setw(3) << i+1 << ".png";
+            if(i == 0)
+                plotParticleSet(records[i], Data(), landmarks, ss.str());
+            else
+                plotParticleSet(records[i], data[i-1], landmarks, ss.str());
         }
     }
 }

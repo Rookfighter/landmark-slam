@@ -7,6 +7,9 @@
 
 #include "Data.hpp"
 
+#ifndef SLAM_PARTICLE_HPP_
+#define SLAM_PARTICLE_HPP_
+
 namespace slam
 {
     struct LandmarkEstimate
@@ -26,3 +29,5 @@ namespace slam
 
     typedef std::vector<Particle> ParticleSet;
 }
+
+#endif

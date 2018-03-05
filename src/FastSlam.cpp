@@ -8,6 +8,7 @@
 #include "FastSlam.hpp"
 #include "Models.hpp"
 #include "Math.hpp"
+#include "Plot.hpp"
 #include "Log.hpp"
 
 namespace slam
@@ -24,6 +25,16 @@ namespace slam
     FastSlam::~FastSlam()
     {
 
+    }
+
+    void FastSlam::plot(const std::vector<ParticleSet> &records,
+              const std::vector<Data> &data,
+              const std::vector<Position> &landmarks,
+              const std::string &dir)
+    {
+        std::stringstream ss;
+        ss << dir << "fast_";
+        plotParticleRecords(records, data, landmarks, ss.str());
     }
 
     std::vector<ParticleSet> FastSlam::run(const std::vector<Data> &data)

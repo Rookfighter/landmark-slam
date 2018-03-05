@@ -5,6 +5,9 @@
  *      Author: Fabian Meyer
  */
 
+#ifndef SLAM_FASTSLAM_HPP_
+#define SLAM_FASTSLAM_HPP_
+
 #include "Particle.hpp"
 
 namespace slam
@@ -35,3 +38,5 @@ namespace slam
                   const std::string &dir);
     };
 }
+
+#endif

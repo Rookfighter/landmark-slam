@@ -5,6 +5,8 @@
  *      Author: Fabian Meyer
  */
 
+#ifndef SLAM_EKFSLAM_HPP_
+#define SLAM_EKFSLAM_HPP_
 
 #include "Data.hpp"
 #include "State.hpp"
@@ -36,3 +38,5 @@ namespace slam
 
     };
 }
+
+#endif
