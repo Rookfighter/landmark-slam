@@ -34,14 +34,14 @@ namespace slam
     {
         std::stringstream ss;
         ss << dir << "ekf_";
-        plotRecords(records, data, landmarks, ss.str());
+        plotStateRecords(records, data, landmarks, ss.str());
     }
 
     std::vector<State> EKFSlam::run(const std::vector<Data> &data,
         const std::vector<Position> &landmarks)
     {
         std::vector<State> records;
-        records.reserve(data.size());
+        records.reserve(data.size() + 1);
 
         // calc dimension of problem to solve
         size_t dim = 3 + landmarks.size() * 2;
@@ -50,6 +50,8 @@ namespace slam
         State state(dim);
         for(size_t i = 3; i < dim; ++i)
             state.cov(i, i) = INF;
+
+        records.push_back(state);
 
         for(size_t i = 0; i < data.size(); ++i)
         {

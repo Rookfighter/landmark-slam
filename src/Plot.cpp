@@ -97,7 +97,7 @@ namespace slam
         plt::save(filename);
     }
 
-    void plotRecords(const std::vector<State>& records,
+    void plotStateRecords(const std::vector<State>& records,
         const std::vector<Data> &data,
         const std::vector<Position> &landmarks,
         const std::string &prefix)
@@ -106,7 +106,10 @@ namespace slam
         {
             std::stringstream ss;
             ss << prefix << std::setfill('0') << std::setw(3) << i+1 << ".png";
-            plotState(records[i], data[i], landmarks, ss.str());
+            if(i == 0)
+                plotState(records[i], Data(), landmarks, ss.str());
+            else
+                plotState(records[i], data[i-1], landmarks, ss.str());
         }
     }
 }
