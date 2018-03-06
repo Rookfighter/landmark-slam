@@ -11,6 +11,13 @@ Implementation was done in C++ using the Eigen3 library.
 
 ## Install
 
+Download the dependencies:
+
+```bash
+cd "path/to/repo"
+git submodule update --init --recursive
+```
+
 Build the executeable ```slam``` using the CMake build system:
 
 ```bash
