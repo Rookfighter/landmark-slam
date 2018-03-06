@@ -26,10 +26,8 @@ namespace slam
         plt::plot(lmsX, lmsY, "b*");
     }
 
-    static void plotPoseEstimate(const State &state)
+    static void plotPose(const Pose &pose, const double radius)
     {
-        Pose pose = state.getPose().pose;
-        double radius = 0.3;
         size_t corners = 16;
         double step = 2 * pi() / corners;
 
@@ -69,12 +67,10 @@ namespace slam
         plt::plot(x, y, "gx");
     }
 
-    void plotMeasurements(const State& state, const Data &data)
+    void plotMeasurements(const Pose& pose, const Data &data)
     {
         if(data.observ.empty())
             return;
-
-        Pose pose = state.getPose().pose;
 
         for(size_t i = 0; i < data.observ.size(); ++i)
         {
@@ -95,10 +91,12 @@ namespace slam
         plt::xlim(-2, 12);
         plt::ylim(-2, 12);
 
+        Pose pose = state.getPose().pose;
+
         plotLandmarks(landmarks);
-        plotPoseEstimate(state);
+        plotPose(pose, 0.3);
         plotLandmarkEstimates(state);
-        plotMeasurements(state, data);
+        plotMeasurements(pose, data);
 
         plt::save(filename);
     }
@@ -121,16 +119,8 @@ namespace slam
 
     static void plotParticles(const ParticleSet& particles)
     {
-        std::vector<double> x(particles.size());
-        std::vector<double> y(particles.size());
-
         for(size_t i = 0; i < particles.size(); ++i)
-        {
-            x[i] = particles[i].pose(0);
-            y[i] = particles[i].pose(1);
-        }
-
-        plt::plot(x, y, "rs");
+            plotPose(particles[i].pose, 0.1);
     }
 
     void plotParticleSet(const ParticleSet& particles,
