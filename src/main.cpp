@@ -34,37 +34,19 @@ static int loadScenario(std::vector<Data> &data,
     return 0;
 }
 
-// static int run(const std::vector<Data> &data,
-//     const std::vector<Position> &landmarks)
-// {
-//     double sensorNoise = 0.1;
-//     double motionNoise = 0.1;
-//     Eigen::Matrix3d odomNoise;
-//     odomNoise << motionNoise, 0, 0,
-//                  0, motionNoise, 0,
-//                  0, 0, motionNoise/10;
-//
-//     size_t dim = 3 + 2 * landmarks.size();
-//     EKFSlam slamAlgo(dim, odomNoise, sensorNoise);
-//
-//     try
-//     {
-//         logger().info("Solving SLAM ...");
-//         std::vector<State> records = slamAlgo.run(data);
-//         logger().info("Plotting ...");
-//         slamAlgo.plot(records, data, landmarks, "../plot/");
-//     }
-//     catch(std::exception &e)
-//     {
-//         logger().error("Failed to run EKF: {}", e.what());
-//         return 1;
-//     }
-//
-//     return 0;
-// }
+EKFSlam getEKFSlam(const size_t dim)
+{
+    double sensorNoise = 0.1;
+    double motionNoise = 0.1;
+    Eigen::Matrix3d odomNoise;
+    odomNoise << motionNoise, 0, 0,
+                 0, motionNoise, 0,
+                 0, 0, motionNoise/10;
 
-static int run(const std::vector<Data> &data,
-    const std::vector<Position> &landmarks)
+    return EKFSlam(dim, odomNoise, sensorNoise);
+}
+
+FastSlam getFastSlam(const size_t dim)
 {
     Eigen::Matrix2d sensorNoise;
     sensorNoise << 0.1,   0,
@@ -73,12 +55,18 @@ static int run(const std::vector<Data> &data,
     odomNoise << 0.005,    0,     0,
                      0, 0.01,     0,
                      0,    0, 0.005;
-    Eigen::Matrix2d borders;
-    borders << 0, 10,
-               0, 10;
+    size_t particleCount = 20;
 
+    return FastSlam(dim, particleCount, odomNoise, sensorNoise);
+}
+
+static int run(const std::vector<Data> &data,
+    const std::vector<Position> &landmarks)
+{
     size_t dim = 3 + 2 * landmarks.size();
-    FastSlam slamAlgo(dim, 100, borders, odomNoise, sensorNoise);
+
+    FastSlam slamAlgo = getFastSlam(dim);
+    // EKFSlam slamAlgo = getEKFSlam(dim);
 
     try
     {

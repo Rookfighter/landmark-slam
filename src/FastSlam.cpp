@@ -14,10 +14,9 @@ namespace slam
 {
     FastSlam::FastSlam(const size_t dim,
         const size_t particleCount,
-        const Eigen::Matrix2d &borders,
         const Eigen::Matrix3d &odomNoise,
         const Eigen::Matrix2d &sensorNoise)
-    : dim_(dim), count_(particleCount), borders_(borders),
+    : dim_(dim), count_(particleCount),
       odomNoise_(odomNoise),sensorNoise_(sensorNoise),
       defWeight_(1.0 / particleCount)
     {

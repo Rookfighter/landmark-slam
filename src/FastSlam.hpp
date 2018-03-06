@@ -17,7 +17,6 @@ namespace slam
     private:
         size_t dim_;
         size_t count_;
-        Eigen::Matrix2d borders_;
         Eigen::Matrix3d odomNoise_;
         Eigen::Matrix2d sensorNoise_;
         double defWeight_;
@@ -34,7 +33,6 @@ namespace slam
     public:
         FastSlam(const size_t dim,
                  const size_t particleCount,
-                 const Eigen::Matrix2d &borders,
                  const Eigen::Matrix3d &odomNoise,
                  const Eigen::Matrix2d &sensorNoise);
         ~FastSlam();

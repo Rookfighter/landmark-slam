@@ -8,7 +8,6 @@
 #include "EKFSlam.hpp"
 #include "Models.hpp"
 #include "Math.hpp"
-#include "Log.hpp"
 #include "Plot.hpp"
 
 #define INF 1000
@@ -51,12 +50,9 @@ namespace slam
 
         for(size_t i = 0; i < data.size(); ++i)
         {
-            logger().info("iteration {}", i);
-
             const Data &dat = data[i];
 
             // process prediction step of EKF
-            logger().info("  prediction step");
             predictionStep(state, dat.odom);
 
             size_t obsCount = dat.observ.size();
@@ -64,7 +60,6 @@ namespace slam
             if(obsCount > 0)
             {
                 // create noise matrix for measurements
-                logger().info("  correction step");
                 // process correction step of EKF
                 correctionStep(state, dat.observ);
             }
